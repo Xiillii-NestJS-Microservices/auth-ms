@@ -32,11 +32,13 @@ export class AuthService extends PrismaClient implements OnModuleInit {
         data: {
           name: name,
           email: email,
-          password: password, // TODO: encriptar la clave
+          password: bcrypt.hashSync(password, 10),
         },
       });
 
-      return { user: newUser, token: 'ABC' };
+      const { password: __, ...restDataUser } = newUser;
+
+      return { user: restDataUser, token: 'ABC' };
     } catch (error) {
       throw new RpcException({
         status: 400,
