@@ -16,3 +16,5 @@ steps:
         'push',
         'northamerica-south1-docker.pkg.dev/micrservicesnestjs/lacaja/auth-ms',
       ]
+options:
+  logging: CLOUD_LOGGING_ONLY
