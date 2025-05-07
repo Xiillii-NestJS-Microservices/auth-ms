@@ -5,6 +5,7 @@ import { LoginUserDto, RegisterUserDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interface/jwt-payload.interface';
+import { envs } from 'src/config';
 
 @Injectable()
 export class AuthService extends PrismaClient implements OnModuleInit {
@@ -88,6 +89,28 @@ export class AuthService extends PrismaClient implements OnModuleInit {
       throw new RpcException({
         status: 400,
         message: error.message,
+      });
+    }
+  }
+
+  async verifyToken(token: string) {
+    try {
+      const { sub, iat, exp, ...user } = await this.jwtService.verifyAsync(
+        token,
+        {
+          secret: envs.jwtSecret,
+        },
+      );
+
+      return {
+        user,
+        token: await this.signJwt(user),
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw new RpcException({
+        status: 401,
+        message: 'Invalid token',
       });
     }
   }
